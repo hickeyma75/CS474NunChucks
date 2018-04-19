@@ -12,7 +12,7 @@ import java.util.Scanner;
 /**
  * MySQLAccess.java
  * 
- * @author Hickey, Burkey Handles all of the mySQL interfacing from the Orders.java program.
+ * @author Hickey, Burkey Handles all of the mySQL interfacing from the CS474Project3Driver.java program.
  *  
  * Group Name: Nunchuck Secret Agents
  */
@@ -26,11 +26,11 @@ public class MySQLAccess {
   final private String host = "mysql.cs.jmu.edu";
   final private String user = "hickeyma";
   final private String passwd = "cs474";
-  final private String database = "Orders";
+  final private String database = "ManuscriptTesting";
 
   /**
    * connectToDB Creates the conenction to the database with the host, user, passwd,
-   * database @author, Hickey, Burkey
+   * database @author, Hickey
    * 
    * @throws Exception
    */
@@ -59,90 +59,120 @@ public class MySQLAccess {
    * @param salesNum sales person number from the UI
    * @throws Exception
    */
-  public void insertCustomer(String custNum, String name, String city, String credLimit,
-      String salesNum) throws Exception {
+  public ArrayList<String> getChantIDs(String location, String date, String event) throws Exception {
     try {
       statement = connect.createStatement();
-      ArrayList<String> custNumArray = new ArrayList<>();
-      ArrayList<String> salesNumArray = new ArrayList<>();
+      ArrayList<String> chantIDArray = new ArrayList<>();
+      
+      //SELECT DISTINCT chantID, provenanceID FROM Feast JOIN Chant ON Chant.feastID = Feast.FeastID JOIN Section ON Chant.libSiglum=Section.libSiglum AND Chant.msSiglum=Section.msSiglum AND Chant.sectionID=Section.sectionID WHERE feastDate="Dec.25" AND chantID IS NOT NULL AND provenanceID = "Rome";
+      
+      if (location != "" && event != "" && date != "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+        		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+          		+ ".Feast.FeastID JOIN " + database + ".Section "
+          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
+          		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%';");}
 
-      resultSet = statement.executeQuery("SELECT DISTINCT custNum FROM " + database + ".Customer");
-
+      else if (location == "" && event == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+        		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+          		+ ".Feast.FeastID JOIN " + database + ".Section "
+          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
+          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL;");}
+    
+      else if (location == "" && date == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+        		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+          		+ ".Feast.FeastID JOIN " + database + ".Section "
+          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
+          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%';");}
+      
+      else if (location == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+        		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+        		+ ".Feast.FeastID JOIN " + database + ".Section "
+        		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+        		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+        		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
+        		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%';");}
+      
+      
+      else if (date == "" && event == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+        		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+          		+ ".Feast.FeastID JOIN " + database + ".Section "
+          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
+          		+ "AND chantID IS NOT NULL AND provenanceID = \"" + location + "\";");}
+      
+      else if (date == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+        		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+        		+ ".Feast.FeastID JOIN " + database + ".Section "
+        		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+        		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+        		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
+        		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%';");}
+      
+      else {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
+      		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+      		+ ".Feast.FeastID JOIN " + database + ".Section "
+      		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+      		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+      		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%' "
+      		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%';");}
+      
       while (resultSet.next()) {
-        custNumArray.add(resultSet.getString("custNum"));
+      	chantIDArray.add(resultSet.getString("chantID"));
       }
 
-      resultSet =
-          statement.executeQuery("SELECT DISTINCT salesNum FROM " + database + ".Salesperson");
-      while (resultSet.next()) {
-        salesNumArray.add(resultSet.getString("salesNum"));
+      System.out.println("Done");
+      resultSet = null;
+      //String insertQuery = "INSERT INTO " + database
+      //    + ".Customer(custNum, name, city, credLimit, salesNum) VALUES('" + custNum + "', '" + name
+      //    + "', '" + city + "', '" + credLimit + "', '" + salesNum + "');";
+
+      //PreparedStatement pstmt = connect.prepareStatement(insertQuery);
+      //pstmt.executeUpdate();
+      for (int i = 0; i < chantIDArray.size(); i++) {
+    	  System.out.println(chantIDArray.get(i));
       }
-
-      if (custNumArray.contains(custNum)) {
-        System.out.println("Customer number already exists in table. Insert Failed.");
-        return;
-      }
-
-      if (!salesNumArray.contains(salesNum)) {
-        System.out.println("No salesperson with that sales number. Insert Failed.");
-        return;
-      }
-
-      String insertQuery = "INSERT INTO " + database
-          + ".Customer(custNum, name, city, credLimit, salesNum) VALUES('" + custNum + "', '" + name
-          + "', '" + city + "', '" + credLimit + "', '" + salesNum + "');";
-
-      PreparedStatement pstmt = connect.prepareStatement(insertQuery);
-      pstmt.executeUpdate();
-
-      System.out.println("Insert Sucessful!");
-    } catch (Exception e) {
+      
+      return chantIDArray;
+      } catch (Exception e) {
       throw e;
     }
   }
 
-  /**
-   * readCustomers reads all of the customers and the total of their amounts from all of their
-   * purchases.
-   * 
-   * @author Hickey, Burkey
-   * @param begin Which customer number to start on
-   * @param end Which customer number to end on
-   * @throws Exception
-   */
-  public void readCustomers(String begin, String end) throws Exception {
-    try {
-      Scanner scanner = new Scanner(System.in);
-      statement = connect.createStatement();
-
-      System.out.println(
-          "Customer Information Table\n Order table by(custNum, name, credLimit, salesNum:");
-      String orderBy = scanner.nextLine();
-
-      if (orderBy.equals("credLimit")) {
-        orderBy = orderBy + " DESC";
-      }
-
-      resultSet = statement.executeQuery(
-          "SELECT c.*, SUM(amount) AS amount FROM " + database + ".Customer c JOIN " + database
-              + ".CustOrder co ON c.custNum = co.custNum GROUP BY custNum ORDER BY " + orderBy);
-
-      if (begin.equals("") && end.equals("")) {
-        printTable(resultSet, 0000, 9999);
-      } else if (begin.equals("") && !end.equals("")) {
-        printTable(resultSet, 0000, Integer.parseInt(end));
-      } else if (!begin.equals("") && end.equals("")) {
-        printTable(resultSet, Integer.parseInt(begin), 9999);
-      } else {
-        printTable(resultSet, Integer.parseInt(begin), Integer.parseInt(end));
-      }
-      scanner.close();
-    } catch (Exception e) {
-      throw e;
-    }
-
+  public String getManuscriptInformation(String chantID) throws SQLException {
+	  String formattedInfo = new String();
+	  
+	  resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID, "
+	  		    + "feastName, feastDescription, Feast.feastID, feastDate, feastNotes, Chant.libSiglum, Chant.msSiglum, "
+	  		    + "msFullText, provenanceDetail, liturgicalOccasion "
+	      		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	      		+ ".Feast.FeastID JOIN " + database + ".Section "
+	      		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	      		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	      		+ database + ".Chant.sectionID=Section.sectionID WHERE chantID = \""+ chantID +"\";");
+	  
+	  if(resultSet.getFetchSize() > 1){
+		  formattedInfo = "Error.  More than one Chant found for " + chantID;
+	  }
+	  else {
+		  resultSet.next();
+		  formattedInfo = "Chant Information for Selected Chant\n\n"
+		  		+ "Chant ID: " + resultSet.getString("chantID") +"\nManuscript Siglum: " + resultSet.getString("msSiglum") +""
+		  		+ "\nLibrary Siglum: " + resultSet.getString("libSiglum") +"\nProvenance ID: "+ resultSet.getString("provenanceID") + ""
+		  		+ "\nProvenance Name: " + resultSet.getString("provenanceDetail") + "\n\nLiturgical Occasion: " + resultSet.getString("liturgicalOccasion") + ""
+		  		+ "\n\nFeast Information\nFeast ID: " + resultSet.getString("feastID") + "\nFeast Name: " + resultSet.getString("feastName") +""
+		  		+ "\nFeast Notes: " + resultSet.getString("feastNotes") + "\n\nSnapshot of the Full Manuscript Text:\n " + resultSet.getString("msFullText").substring(0, 40) 
+		  		+"...\n\n END OF RECORD";
+	  }
+	  resultSet = null;
+	  return formattedInfo;
   }
-
   /**
    * Close Closes the result sets and the database connection.
    * 
@@ -166,28 +196,5 @@ public class MySQLAccess {
     }
   }
 
-  // Prints the table for printing all cusotomer information.
-  private void printTable(ResultSet resultSet, int begin, int end) throws SQLException {
-    System.out.println("custNum\t\tname\t\tcity\t\tCredit Limit\t\tSalesNumber\t\tTotal Amount"
-        + "\n________________________________________________________________"
-        + "_______________________________________________________");
-
-    while (resultSet.next()) {
-      String custNum = resultSet.getString("custNum");
-      String name = resultSet.getString("name");
-      String city = resultSet.getString("city");
-      String credLimit = Double.toString(resultSet.getDouble("credLimit"));
-      String salesNum = resultSet.getString("salesNum");
-      String totalAmount = Double.toString(resultSet.getDouble("amount"));
-      if (Integer.parseInt(custNum) >= begin && Integer.parseInt(custNum) <= end) {
-        System.out.println(String.format(
-            "custNum:%s\t|Name: %s\t|City: %s\t|Credit Limit: %s\t|Sales Number: %s\t|Total Amount: %s\t|",
-            custNum, name, city, credLimit, salesNum, totalAmount));
-        System.out.print("________________________________________________________________"
-            + "_______________________________________________________\n");
-      }
-    }
-    System.out.println();
-  }
 
 }
