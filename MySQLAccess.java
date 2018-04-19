@@ -59,7 +59,7 @@ public class MySQLAccess {
    * @param salesNum sales person number from the UI
    * @throws Exception
    */
-  public ArrayList<String> getChantIDs(String location, String date, String event) throws Exception {
+  public ArrayList<String> getChantIDs(String location, String date, String event, String msSiglum) throws Exception {
     try {
       statement = connect.createStatement();
       ArrayList<String> chantIDArray = new ArrayList<>();
@@ -72,7 +72,8 @@ public class MySQLAccess {
           		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
           		+ database + ".Chant.msSiglum=Section.msSiglum AND "
           		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
-          		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%';");}
+          		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event 
+          		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
 
       else if (location == "" && event == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
         		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
@@ -80,7 +81,8 @@ public class MySQLAccess {
           		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
           		+ database + ".Chant.msSiglum=Section.msSiglum AND "
           		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
-          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL;");}
+          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL"
+          		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
     
       else if (location == "" && date == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
         		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
@@ -88,7 +90,8 @@ public class MySQLAccess {
           		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
           		+ database + ".Chant.msSiglum=Section.msSiglum AND "
           		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
-          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%';");}
+          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%' "
+          		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
       
       else if (location == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
         		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
@@ -96,7 +99,8 @@ public class MySQLAccess {
         		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
         		+ database + ".Chant.msSiglum=Section.msSiglum AND "
         		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
-        		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%';");}
+        		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%'"
+          		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
       
       
       else if (date == "" && event == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
@@ -105,7 +109,8 @@ public class MySQLAccess {
           		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
           		+ database + ".Chant.msSiglum=Section.msSiglum AND "
           		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
-          		+ "AND chantID IS NOT NULL AND provenanceID = \"" + location + "\";");}
+          		+ "AND chantID IS NOT NULL AND provenanceID = \"" + location + "\""
+          		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
       
       else if (date == "") {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
         		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
@@ -113,7 +118,8 @@ public class MySQLAccess {
         		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
         		+ database + ".Chant.msSiglum=Section.msSiglum AND "
         		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
-        		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%';");}
+        		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%'"
+          		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
       
       else {resultSet = statement.executeQuery("SELECT DISTINCT chantID, provenanceID "
       		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
@@ -121,7 +127,8 @@ public class MySQLAccess {
       		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
       		+ database + ".Chant.msSiglum=Section.msSiglum AND "
       		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%' "
-      		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%';");}
+      		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%'"
+      		+ "%' AND Chant.msSiglum = " + msSiglum +";");}
       
       while (resultSet.next()) {
       	chantIDArray.add(resultSet.getString("chantID"));
@@ -129,12 +136,6 @@ public class MySQLAccess {
 
       System.out.println("Done");
       resultSet = null;
-      //String insertQuery = "INSERT INTO " + database
-      //    + ".Customer(custNum, name, city, credLimit, salesNum) VALUES('" + custNum + "', '" + name
-      //    + "', '" + city + "', '" + credLimit + "', '" + salesNum + "');";
-
-      //PreparedStatement pstmt = connect.prepareStatement(insertQuery);
-      //pstmt.executeUpdate();
       for (int i = 0; i < chantIDArray.size(); i++) {
     	  System.out.println(chantIDArray.get(i));
       }
@@ -145,6 +146,85 @@ public class MySQLAccess {
     }
   }
 
+  public ArrayList<String> getMSSiglumIDs(String location, String date, String event) throws Exception {
+	    try {
+	      statement = connect.createStatement();
+	      ArrayList<String> msSiglumArray = new ArrayList<>();
+	      
+	      //SELECT DISTINCT chantID, provenanceID FROM Feast JOIN Chant ON Chant.feastID = Feast.FeastID JOIN Section ON Chant.libSiglum=Section.libSiglum AND Chant.msSiglum=Section.msSiglum AND Chant.sectionID=Section.sectionID WHERE feastDate="Dec.25" AND chantID IS NOT NULL AND provenanceID = "Rome";
+	      
+	      if (location != "" && event != "" && date != "") {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	        		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	          		+ ".Feast.FeastID JOIN " + database + ".Section "
+	          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
+	          		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%';");}
+
+	      else if (location == "" && event == "") {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	        		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	          		+ ".Feast.FeastID JOIN " + database + ".Section "
+	          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
+	          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL;");}
+	    
+	      else if (location == "" && date == "") {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	        		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	          		+ ".Feast.FeastID JOIN " + database + ".Section "
+	          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
+	          		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%';");}
+	      
+	      else if (location == "") {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	        		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	        		+ ".Feast.FeastID JOIN " + database + ".Section "
+	        		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	        		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	        		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%'"
+	        		+ "AND chantID IS NOT NULL AND provenanceID IS NOT NULL AND feastDescription LIKE '%" + event + "%';");}
+	      
+	      
+	      else if (date == "" && event == "") {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	        		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	          		+ ".Feast.FeastID JOIN " + database + ".Section "
+	          		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	          		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	          		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
+	          		+ "AND chantID IS NOT NULL AND provenanceID = \"" + location + "\";");}
+	      
+	      else if (date == "") {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	        		+ "FROM " + database + ".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	        		+ ".Feast.FeastID JOIN " + database + ".Section "
+	        		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	        		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	        		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate IS NOT NULL "
+	        		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%' AND feastDescription LIKE '%" + event + "%';");}
+	      
+	      else {resultSet = statement.executeQuery("SELECT DISTINCT Chant.msSiglum "
+	      		+ "FROM " + database +".Feast JOIN Chant ON " + database + ".Chant.feastID = " + database 
+	      		+ ".Feast.FeastID JOIN " + database + ".Section "
+	      		+ "ON " + database + ".Chant.libSiglum=" + database + ".Section.libSiglum AND "
+	      		+ database + ".Chant.msSiglum=Section.msSiglum AND "
+	      		+ database + ".Chant.sectionID=Section.sectionID WHERE feastDate LIKE '%" + date + "%' "
+	      		+ "AND chantID IS NOT NULL AND provenanceID LIKE '%" + location + "%';");}
+	      
+	      while (resultSet.next()) {
+	      	msSiglumArray.add(resultSet.getString("msSiglum"));
+	      }
+
+	      System.out.println("Done");
+	      resultSet = null;
+	      for (int i = 0; i < msSiglumArray.size(); i++) {
+	    	  System.out.println(msSiglumArray.get(i));
+	      }
+	      
+	      return msSiglumArray;
+	      } catch (Exception e) {
+	      throw e;
+	    }
+	  }
   public String getManuscriptInformation(String chantID) throws SQLException {
 	  String formattedInfo = new String();
 	  
@@ -167,8 +247,7 @@ public class MySQLAccess {
 		  		+ "\nLibrary Siglum: " + resultSet.getString("libSiglum") +"\nProvenance ID: "+ resultSet.getString("provenanceID") + ""
 		  		+ "\nProvenance Name: " + resultSet.getString("provenanceDetail") + "\n\nLiturgical Occasion: " + resultSet.getString("liturgicalOccasion") + ""
 		  		+ "\n\nFeast Information\nFeast ID: " + resultSet.getString("feastID") + "\nFeast Name: " + resultSet.getString("feastName") +""
-		  		+ "\nFeast Notes: " + resultSet.getString("feastNotes") + "\n\nSnapshot of the Full Manuscript Text:\n " + resultSet.getString("msFullText").substring(0, 40) 
-		  		+"...\n\n END OF RECORD";
+		  		+ "\nFeast Notes: " + resultSet.getString("feastNotes")  +"\n\n END OF RECORD";
 	  }
 	  resultSet = null;
 	  return formattedInfo;
