@@ -247,7 +247,9 @@ public class gui1 {
 									           
 												String newRecord = null;
 												try {
-													newRecord = dao.getManuscriptInformation(selectedChantItem);
+													newRecord = dao.getManuscriptInformation(
+															selectedChantItem.substring(selectedChantItem.indexOf("(") + 1, selectedChantItem.length()-1), 
+															locationField.getText(), dateField.getText(), comboBox.getSelectedItem().toString());
 												} catch (SQLException e1) {
 													// TODO Auto-generated catch block
 													e1.printStackTrace();
